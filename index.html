@@ -68,7 +68,7 @@
       return{
         type: RECEIVE_DATA,
         todos,
-        goals
+        goals,
       }
     }
 
@@ -233,8 +233,7 @@
           API.fetchTodos(),
           API.fetchGoals()
         ]).then(([ todos, goals ]) => {
-          console.log('Todos', todos)
-          console.log('Goals', goals)
+          store.dispatch(receiveDataAction(todos,goals))
         })
       }
 
