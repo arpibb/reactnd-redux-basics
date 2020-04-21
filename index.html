@@ -74,6 +74,19 @@
       }
     }
 
+    function handleAddTodoAction(name,cb){
+      return (dispatch) => {
+        return API.saveTodo(name)
+          .then((todo)=>{
+            dispatch(addTodoAction(todo))
+            cb()
+          })
+          .catch(()=>{
+            alert('There was an error. Please try again')
+          })
+      }
+    }
+
     function handleDeleteTodoAction(todo){
       return (dispatch) => {
         dispatch(removeTodoAction(todo.id))
@@ -86,7 +99,18 @@
       }
     }
 
-    function handleAddGoal(name, cb){
+    function handleToggleTodoAction(id){
+      return (dispatch) => {
+        dispatch(toggleTodoAction(id))
+        return API.saveTodoToggle(id)
+          .catch((error)=>{
+            dispatch(toggleTodoAction(id))
+            alert(`An error occured. ${error}`)
+          })
+      }
+    }
+
+    function handleAddGoalAction(name, cb){
       return (dispatch) => {
         return API.saveGoal(name)
           .then((goal)=>{
@@ -201,15 +225,10 @@
     class Todos extends React.Component{
       addItem = (e)=>{
         e.preventDefault()
-        
-        return API.saveTodo(this.input.value)
-          .then((todo)=>{
-            this.props.store.dispatch(addTodoAction(todo))
-            this.input.value = ''
-          })
-          .catch(()=>{
-            alert('There was an error. Please try again')
-          })
+        this.props.store.dispatch(handleAddTodoAction(
+          this.input.value,
+          () => this.input.value = ''
+        ))
       }
 
       removeItem = (todo) => {
@@ -217,12 +236,7 @@
       }
 
       toggleItem = (id) =>{
-        this.props.store.dispatch(toggleTodoAction(id))
-        return API.saveTodoToggle(id)
-          .catch((error)=>{
-            this.props.store.dispatch(toggleTodoAction(id))
-            alert(`An error occured. ${error}`)
-          })
+        this.props.store.dispatch(handleToggleTodoAction(id))
       }
       
 
@@ -250,7 +264,7 @@
       
       addItem = (e)=>{
         e.preventDefault()
-        this.props.store.dispatch(handleAddGoal(
+        this.props.store.dispatch(handleAddGoalAction(
           this.input.value,
           () => this.ipnut.value = ''
         ))
